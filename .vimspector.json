@@ -1,0 +1,49 @@
+{
+  "configurations": {
+    "Python": {
+      "adapter": "debugpy",
+      "filetypes": ["python"],
+      "breakpoints": {
+        "exception": {
+          "caught": "Y",
+          "uncaught": "N",
+          "raised": "N"
+        }
+      },
+      "configuration": {
+        "type": "python",
+        "request": "launch",
+        "python": "/usr/bin/python",
+        "stopOnEntry": true,
+        "console": "externalTerminal",
+        "debugOptions": [],
+        "program": "${file}",
+        "define": true
+      }
+    },
+    "C++": {
+      "adapter": "vscode-cpptools",
+      "filetypes": ["cpp"],
+      "configuration": {
+        "type": "cpp",
+        "request": "launch",
+        "stopOnEntry": true,
+        "MIMode": "gdb",
+        "MIDebuggerPath": "/usr/bin/gdb",
+        "console": "externalTerminal",
+        "program": "${workspaceRoot}/a.out"
+      }
+    },
+    "Node.js": {
+      "adapter": "vscode-node",
+      "filetypes": ["javascript", "typescript"],
+      "configuration": {
+        "type": "js",
+        "request": "launch",
+        "stopOnEntry": true,
+        "console": "integratedTerminal",
+        "program": "${file}"
+      }
+    }
+  }
+}
