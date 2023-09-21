@@ -1,5 +1,40 @@
+Tesseract:
 Когда предмет ведут ещё с
 
 сревраля, HO ты только сейчас
 решил сходить на эту лекцию
 
+Tesseract advance:
+Когда предмет ведут ещё с
+
+февраля, но ты только сейчас
+решил сходить на эту лекцию
+
+
+PaddleOCR cyr:
+
+Когда
+ецё
+Bедут
+С
+рдмт
+февраля
+сейчас
+но
+Tb!
+только
+Hа
+эту
+бешил
+ходить
+лекцию
+ођџђие
+Bека
+
+PaddleOCR en:
+
+Kora npemet beyt ewe c
+qeBpan9, HO TbI TOnbKO ceu4ac
+pew0 cxo0tb Ha 3ty JekyuiO
+CobbiTne
+Beka

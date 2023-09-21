@@ -1,0 +1,10 @@
+Tesseract:
+
+Tesseract advance:
+PaddleOCR cyr:
+
+двА
+
+PaddleOCR en:
+
+ABA
