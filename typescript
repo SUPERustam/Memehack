@@ -1,0 +1,128 @@
+Script started on Sun Sep 24 12:13:40 2023
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                ]2;superustam@Rustams-MacBook-Air:~/XProject/memehack]1;..ject/memehack]7;file://Rustams-MacBook-Air/Users/superustam/XProject/memehack\[0m[27m[24m[J[01;32m➜  [36mmemehack[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hscripts[?1l>[?2004l
+]2;scripts]1;scripts[1m[7m%[27m[1m[0m                                                                                                                                                                                                                ]2;superustam@Rustams-MacBook-Air:~/XProject/memehack/scripts]1;..ehack/scripts]7;file://Rustams-MacBook-Air/Users/superustam/XProject/memehack/scripts\[0m[27m[24m[J[01;32m➜  [36mscripts[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hmman script[?1l>[?2004l
+]2;man script]1;manUnknown locale, assuming C
+[?1049h[?1h=SCRIPT(1)                                                                                   General Commands Manual                                                                                  SCRIPT(1)[m
+[m
+[1mNAME[0m[m
+     [1mscript[0m – make typescript of terminal session[m
+[m
+[1mSYNOPSIS[0m[m
+     [1mscript[0m [[1m-adkpqr[0m] [[1m-F[0m [4mpipe[24m] [[1m-t[0m [4mtime[24m] [[4mfile[24m [[4mcommand[24m [4m...[24m]][m
+[m
+[1mDESCRIPTION[0m[m
+     The [1mscript[0m utility makes a typescript of everything printed on your terminal.  It is useful for students who need a hardcopy record of an interactive session as proof of an assignment, as the[m
+     typescript file can be printed out later with lpr(1).[m
+[m
+     If the argument [4mfile[24m is given, [1mscript[0m saves all dialogue in [4mfile[24m.  If no file name is given, the typescript is saved in the file [4mtypescript[24m.[m
+[m
+     If the argument [4mcommand[24m is given, [1mscript[0m will run the specified command with an optional argument vector instead of an interactive shell.[m
+[m
+     The following options are available:[m
+[m
+     [1m-a[0m      Append the output to [4mfile[24m or [4mtypescript[24m, retaining the prior contents.[m
+[m
+     [1m-d[0m      When playing back a session with the [1m-p[0m flag, do not sleep between records when playing back a timestamped session.[m
+[m
+     [1m-F[0m [4mpipe[24m[m
+             Immediately flush output after each write.  This will allow a user to create a named pipe using mkfifo(1) and another user may watch the live session using a utility like cat(1).[m
+[m
+     [1m-k[0m      Log keys sent to the program as well as output.[m
+[m
+     [1m-p[0m      Play back a session recorded with the [1m-r[0m flag in real time.[m
+[m
+     [1m-q[0m      Run in quiet mode, omit the start, stop and command status messages.[m
+[m
+     [1m-r[0m      Record a session with input, output, and timestamping.[m
+[m
+     [1m-t[0m [4mtime[24m[m
+             Specify the interval at which the script output file will be flushed to disk, in seconds.  A value of 0 causes [1mscript[0m to flush after every character I/O event.  The default interval is 30[m
+             seconds.[m
+[m
+     The script ends when the forked shell (or command) exits (a [4mcontrol-D[24m to exit the Bourne shell (sh(1)), and [4mexit[24m, [4mlogout[24m or [4mcontrol-D[24m (if [4mignoreeof[24m is not set) for the C-shell, csh(1)).[m
+[m
+     Certain interactive commands, such as vi(1), create garbage in the typescript file.  The [1mscript[0m utility works best with commands that do not manipulate the screen.  The results are meant to emulate a[m
+     hardcopy terminal, not an addressable one.[m
+[m
+[1mENVIRONMENT[0m[m
+     The following environment variables are utilized by [1mscript[0m:[m
+[m
+     SCRIPT[m
+            The SCRIPT environment variable is added to the sub-shell.  If SCRIPT already existed in the users environment, its value is overwritten within the sub-shell.  The value of SCRIPT is the name of[m
+            the [4mtypescript[24m file.[m
+[m
+     SHELL  If the variable SHELL exists, the shell forked by [1mscript[0m will be that shell.  If SHELL is not set, the Bourne shell is assumed.  (Most shells set this variable automatically).[m
+[m
+[1mSEE[0m [1mALSO[0m[m
+:[K[K[?1l>[?1049l[1m[7m%[27m[1m[0m                                                                                                                                                                                                                ]2;superustam@Rustams-MacBook-Air:~/XProject/memehack/scripts]1;..ehack/scripts]7;file://Rustams-MacBook-Air/Users/superustam/XProject/memehack/scripts\[0m[27m[24m[J[01;32m➜  [36mscripts[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hpps[?1l>[?2004l
+]2;ps]1;ps  PID TTY           TIME CMD
+82521 ttys000    0:00.07 /bin/zsh -i
+80777 ttys001    0:00.68 -zsh
+82520 ttys001    0:00.01 script
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                ]2;superustam@Rustams-MacBook-Air:~/XProject/memehack/scripts]1;..ehack/scripts]7;file://Rustams-MacBook-Air/Users/superustam/XProject/memehack/scripts\[0m[27m[24m[J[01;32m➜  [36mscripts[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hrrm r  kkill scrp ipt[?1l>[?2004l
+]2;kill script]1;killkill: illegal pid: script
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                ]2;superustam@Rustams-MacBook-Air:~/XProject/memehack/scripts]1;..ehack/scripts]7;file://Rustams-MacBook-Air/Users/superustam/XProject/memehack/scripts\[0m[27m[24m[J[01;31m➜  [36mscripts[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hkill script[11Dps         [9D[?1l>[?2004l
+]2;ps]1;ps  PID TTY           TIME CMD
+82521 ttys000    0:00.09 /bin/zsh -i
+80777 ttys001    0:00.68 -zsh
+82520 ttys001    0:00.01 script
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                ]2;superustam@Rustams-MacBook-Air:~/XProject/memehack/scripts]1;..ehack/scripts]7;file://Rustams-MacBook-Air/Users/superustam/XProject/memehack/scripts\[0m[27m[24m[J[01;32m➜  [36mscripts[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hps  mman kill[?1l>[?2004l
+]2;man kill]1;manUnknown locale, assuming C
+[?1049h[?1h=KILL(1)                                                                                     General Commands Manual                                                                                    KILL(1)[m
+[m
+[1mNAME[0m[m
+     [1mkill[0m – terminate or signal a process[m
+[m
+[1mSYNOPSIS[0m[m
+     [1mkill[0m [[1m-s[0m [4msignal_name[24m] [4mpid[24m [4m...[24m[m
+     [1mkill[0m [1m-l[0m [[4mexit_status[24m][m
+     [1mkill[0m [1m-[0m[4msignal_name[24m [4mpid[24m [4m...[24m[m
+     [1mkill[0m [1m-[0m[4msignal_number[24m [4mpid[24m [4m...[24m[m
+[m
+[1mDESCRIPTION[0m[m
+     The [1mkill[0m utility sends a signal to the processes specified by the [4mpid[24m operands.[m
+[m
+     Only the super-user may send signals to other users' processes.[m
+[m
+     The options are as follows:[m
+[m
+     [1m-s[0m [4msignal_name[24m[m
+             A symbolic signal name specifying the signal to be sent instead of the default TERM.[m
+[m
+     [1m-l[0m [[4mexit_status[24m][m
+             If no operand is given, list the signal names; otherwise, write the signal name corresponding to [4mexit_status[24m.[m
+[m
+     [1m-[0m[4msignal_name[24m[m
+             A symbolic signal name specifying the signal to be sent instead of the default TERM.[m
+[m
+     [1m-[0m[4msignal_number[24m[m
+             A non-negative decimal integer, specifying the signal to be sent instead of the default TERM.[m
+[m
+     The following PIDs have special meanings:[m
+[m
+     -1      If superuser, broadcast the signal to all processes; otherwise broadcast to all processes belonging to the user.[m
+[m
+     Some of the more commonly used signals:[m
+[m
+     1       HUP (hang up)[m
+     2       INT (interrupt)[m
+     3       QUIT (quit)[m
+     6       ABRT (abort)[m
+     9       KILL (non-catchable, non-ignorable kill)[m
+     14      ALRM (alarm clock)[m
+     15      TERM (software termination signal)[m
+[m
+     Some shells may provide a builtin [1mkill[0m command which is similar or identical to this utility.  Consult the builtin(1) manual page.[m
+[m
+[1mEXIT[0m [1mSTATUS[0m[m
+     The [1mkill[0m utility exits 0 on success, and >0 if an error occurs.[m
+[m
+[1mEXAMPLES[0m[m
+     Terminate the processes with PIDs 142 and 157:[m
+[m
+:[K[K[?1l>[?1049l[1m[7m%[27m[1m[0m                                                                                                                                                                                                                ]2;superustam@Rustams-MacBook-Air:~/XProject/memehack/scripts]1;..ehack/scripts]7;file://Rustams-MacBook-Air/Users/superustam/XProject/memehack/scripts\[0m[27m[24m[J[01;32m➜  [36mscripts[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hman kill[8D        [8Dkkill -s scipt   ript[?1l>[?2004l
+]2;kill -s script]1;killkill: unknown signal: SIGSCRIPT
+kill: type kill -l for a list of signals
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                ]2;superustam@Rustams-MacBook-Air:~/XProject/memehack/scripts]1;..ehack/scripts]7;file://Rustams-MacBook-Air/Users/superustam/XProject/memehack/scripts\[0m[27m[24m[J[01;31m➜  [36mscripts[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004hkill -s script script [8Dl script[1Ccript ript ipt pt t  [?1l>[?2004l
+]2;kill -l]1;killHUP INT QUIT ILL TRAP ABRT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM URG STOP TSTP CONT CHLD TTIN TTOU IO XCPU XFSZ VTALRM PROF WINCH INFO USR1 USR2
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                ]2;superustam@Rustams-MacBook-Air:~/XProject/memehack/scripts]1;..ehack/scripts]7;file://Rustams-MacBook-Air/Users/superustam/XProject/memehack/scripts\[0m[27m[24m[J[01;32m➜  [36mscripts[00m [01;34mgit:([31mmaster[34m) [33m✗[00m [K[?1h=[?2004h
