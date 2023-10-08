@@ -3,7 +3,8 @@ CREATE TABLE images(
   vk VARCHAR(255) DEFAULT '_',
   vk_small VARCHAR(255) DEFAULT '_', 
   tg VARCHAR(255) DEFAULT '_',
-  tg_small VARCHAR(255) DEFAULT '_'
+  tg_small VARCHAR(255) DEFAULT '_',
+  source_vk VARCHAR(255) DEFAULT '_'
 );
 
 CREATE TABLE texts(
@@ -16,7 +17,7 @@ CREATE TABLE texts(
 CREATE TABLE actions(
   id SERIAL PRIMARY KEY,
   time TIMESTAMP NOT NULL,
-  user_id SERIAL NOT NULL,
+  user_id INT,
   img_id SERIAL,
   action VARCHAR(255) NOT NULL,
   detail JSON NOT NULL,
