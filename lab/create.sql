@@ -14,13 +14,18 @@ CREATE TABLE texts(
   FOREIGN KEY (img_id) REFERENCES images(id)
 );
 
+CREATE TABLE users(
+  id SERIAL PRIMARY KEY,
+  lang CHAR(2)
+);
+
 CREATE TABLE actions(
   id SERIAL PRIMARY KEY,
   time TIMESTAMP NOT NULL,
-  user_id INT,
+  user_id SERIAL NOT NULL,
   img_id SERIAL,
-  action VARCHAR(255) NOT NULL,
-  detail JSON NOT NULL,
-  FOREIGN KEY (img_id) REFERENCES images(id)
+  action CHAR(3) NOT NULL,
+  detail JSON,
+  FOREIGN KEY (img_id) REFERENCES images(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
