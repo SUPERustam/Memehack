@@ -15,14 +15,14 @@ CREATE TABLE texts(
 );
 
 CREATE TABLE users(
-  id SERIAL PRIMARY KEY,
+  id BIGINT PRIMARY KEY,
   lang CHAR(2)
 );
 
 CREATE TABLE actions(
   id SERIAL PRIMARY KEY,
   time TIMESTAMP NOT NULL,
-  user_id SERIAL NOT NULL,
+  user_id BIGINT NOT NULL,
   img_id SERIAL,
   action CHAR(3) NOT NULL,
   detail JSON,
