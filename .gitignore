@@ -164,4 +164,4 @@ cython_debug/
 .DS_Store?DS_Store
 
 # keep save passwords, api tokens etc.
-*/secrets.py*
+*/tg/secrets.py*
