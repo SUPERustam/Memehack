@@ -24,7 +24,7 @@ def search(input_text: str) -> list[str | int] | None:
 
 
 
-def get_user_lang(cur: psycopg2.extensions.cursor, user_id: int):
+def get_user_lang(cur: psycopg2.extensions.cursor, user_id: int) -> str:
     cur.execute("SELECT lang FROM users WHERE id = %s", (user_id,))
     lang = cur.fetchone()
     return lang[0] if lang else 'en'

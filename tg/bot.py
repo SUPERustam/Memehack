@@ -1,4 +1,4 @@
-# TODO
+# TODO:
 # 1. Update conn (where and how often?)
 # 2. Log
 # 3. with open cursor
@@ -49,7 +49,6 @@ languages = {
     '🇷🇺 Русский': 'ru',
     '🇬🇧 English': 'en'
 }
-
 selected_language = ''
 text_responds = {
     'greet': {
@@ -89,6 +88,7 @@ def start(message):
     bot.send_message(message.from_user.id, respond, reply_markup=markup)
     fdb.log_action(cur, action='pos', message=message, text=respond)
     bot.register_next_step_handler(message, set_lang)
+    markup = types.ReplyKeyboardRemove()
 
 def set_lang(message):
     if message.text in languages.keys:
@@ -113,6 +113,7 @@ def info(message):
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
+
     selected_language = fdb.get_user_lang(message.from_user.id)
      
     if message.text != 'stop':
@@ -136,5 +137,10 @@ def get_text_messages(message):
     else:
         pass
 
-#TODO: close all connection(conn, cur), maybe by shutdown.py, or by hand
+
 bot.polling(none_stop=True, interval=0)
+
+
+
+#TODO: close all connection(conn, cur), maybe by shutdown.py, or by hand
+conn.close()
