@@ -9,23 +9,19 @@
 
 
 import sys
-sys.path.append("././")
-import db.func_db as fdb
+from datetime import datetime
+
 
 import telebot
 from telebot import types
-
-import config 
-bot = telebot.TeleBot(config.TG_TOKEN)
-
-
-
-
-
-
 import psycopg2
 from psycopg2 import sql
-from datetime import datetime
+
+sys.path.append(".")
+import db.func_db as fdb
+import config 
+
+bot = telebot.TeleBot(config.TG_TOKEN)
 
 
 # PostgreSQL db connection initialization
