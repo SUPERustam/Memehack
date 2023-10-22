@@ -1,0 +1,48 @@
+Tesseract:
+Блин, он не
+отвечает... Наверное
+опять CO CBOMMN
+шлюхами
+
+КАКЕЙ{СКАЗАТЬ,ЧТО В ОТПУСК
+MbINB. STO М ro AY НЕЕДЕМ?
+
+Tesseract advance:
+Блин, он не
+отвечает... Наверное
+опять со CBOMMM
+шлюхами
+
+КАК(ЕЙ{СКАЗАТЬ, ЧТО В ОТПУСК
+IMbi|B 3TO M ro AY HE EQEM?
+
+PaddleOCR cyr:
+
+Блин
+он
+He
+OtbeyaeT...
+Hаверное
+Oпяtь
+с
+своими
+шлюхами
+KAK
+Eи CKA3ATb.
+чт
+B
+тпуск
+мыв
+этом
+году
+HЕ
+EAEM?
+
+PaddleOCR en:
+
+BAuH, OH He
+OTBeyaeT...Habephoe
+OnATbCOCBO0M0
+mnioxaMn
+KAK E0CKA3ATb,4TO B OTnYCK
+MbIB 3tOm rOAy hEEem?

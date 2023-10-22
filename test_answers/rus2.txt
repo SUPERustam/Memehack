@@ -1,0 +1,35 @@
+Tesseract:
+71 В детстве:
+
+Я должен всё
+понимать
+
+Tesseract advance:
+71 В детстве:
+
+Я должен всё
+понимать
+
+
+PaddleOCR cyr:
+
+детCтB.
+Я
+Bсё
+должен
+OHИMаTы
+Я
+Ceйчac.
+Хаaxa.
+Я
+люблю
+меMы
+
+PaddleOCR en:
+
+4 B
+Hetctbe:
+9 gOn>KeH BCe
+noHUMaTb
+9 ceu4ac:
+Xaxa,9 Jo6no MeMbl
