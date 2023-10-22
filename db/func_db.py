@@ -1,5 +1,12 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from telebot import types
 import psycopg2
 from datetime import datetime
+import jsonpickle
+
+
 
 def get_image_by_id(cur: psycopg2.extensions.cursor, id: (str | int)):
     cur.execute("SELECT * FROM images WHERE id=%s", (id,))
@@ -23,14 +30,16 @@ def search(input_text: str) -> list[str | int] | None:
 
 
 
-
+# def add_user(cur: psycopg2.extensions.cursor, user_id: int, lang: str):
+#     pass
+    
 def get_user_lang(cur: psycopg2.extensions.cursor, user_id: int) -> str:
     cur.execute("SELECT lang FROM users WHERE id = %s", (user_id,))
     lang = cur.fetchone()
     return lang[0] if lang else 'en'
 
 
-def update_or_add_user(cur: psycopg2.extensions.cursor, user_id, lang):
+def update_or_add_user(cur: psycopg2.extensions.cursor, user_id: int, lang: str):
     cur.execute("SELECT 1 FROM users WHERE id = %s", (user_id,))
     user_exists = cur.fetchone()
     if user_exists:
@@ -40,24 +49,26 @@ def update_or_add_user(cur: psycopg2.extensions.cursor, user_id, lang):
 
 
 
-
-def log_action(cur: psycopg2.extensions.cursor, action: str, message: dict = dict(), img_id: int = 0, text: str = ''):
-    timestamp = datetime.datetime.now()
+#TODO: убрать все img_id которые не нужны!!
+def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id: int = 0, txt_respond: str = ''):
+    timestamp = datetime.now()
     user_id = message.from_user.id
-
+    
     if action == 'pos':
-        detail = {'text': text}
-        if img_id != 0:
-            cur.execute('INSERT INTO messages (time, user_id, img_id, action)' 
-                'VALUES (%s, %s, %s, %s)', (timestamp, user_id, img_id, action)
+        if img_id == 0:
+            detail = jsonpickle.encode({'text': txt_respond})
+            cur.execute('INSERT INTO actions (time, user_id, img_id, action, detail)' 
+                'VALUES (%s, %s, %s, %s, %s::json)', (timestamp, user_id, img_id, action, detail)
             )
         else:
-            cur.execute('INSERT INTO messages (time, user_id, action detail)' 
-                'VALUES (%s, %s, %s, %s::json)', (timestamp, user_id, action, detail)
+            detail = jsonpickle.encode({'img_id': img_id})
+            cur.execute('INSERT INTO actions (time, user_id, action, detail, img_id)' 
+                'VALUES (%s, %s, %s, %s::json, %s)', (timestamp, user_id, action, detail, img_id)
             )   
     
     else:
-        detail = message
-        cur.execute('INSERT INTO messages (time, user_id, action, detail)' 
-            'VALUES (%s, %s, %s, %s::json)', (timestamp, user_id, action, detail)
+        detail = jsonpickle.encode({'text': message.text})  
+        cur.execute('INSERT INTO actions (time, user_id, action, detail, img_id)' 
+            'VALUES (%s, %s, %s, %s::json, %s)', (timestamp, user_id, action, detail, img_id)
         )
+    print(action, user_id, detail)
