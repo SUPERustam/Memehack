@@ -4,7 +4,9 @@
 import psycopg2
 from datetime import datetime
 import jsonpickle
-import string
+import sys
+sys.path.append('.')
+import util
 
 
 def get_image_by_id(cur: psycopg2.extensions.cursor, id):
@@ -22,10 +24,9 @@ def insert_text(cur: psycopg2.extensions.cursor, img_id: int, text_ru: str = '',
                 (img_id, text_ru, text_en))
 
 
-def search(cur: psycopg2.extensions.cursor, input_text: str) -> list[int]:
+def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     # Удалить знаки препинания
-    input_text = input_text.translate(
-        str.maketrans('', '', string.punctuation))
+    input_text = util.normalization_text(input_text)
     # Удалить лишние пробелы
     input_text = ' '.join(input_text.split())
 
@@ -46,7 +47,9 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list[int]:
     ''', (input_text, input_text))
 
     all_texts = cur.fetchall()
+    
     number_list = []
+
     # может попасться элемент NULL, который отображается строкой '_', убираем его
     for row in all_texts:
         for value in row:
