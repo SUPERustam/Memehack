@@ -1,14 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from telebot import types
 import psycopg2
 from datetime import datetime
 import jsonpickle
 import string
 
 
-def get_image_by_id(cur: psycopg2.extensions.cursor, id: (str | int)):
+def get_image_by_id(cur: psycopg2.extensions.cursor, id: int):
     cur.execute("SELECT * FROM images WHERE id=%s", (id,))
 
 
@@ -16,7 +15,7 @@ def insert_image(cur: psycopg2.extensions.cursor, vk: str, vk_small: str = '', t
     cur.execute("INSERT INTO images (vk, vk_small, tg, tg_small, source_vk) VALUES (%s, %s, %s, %s, %s)",
                 (vk, vk_small, tg, tg_small, source_vk))
 
-def insert_text(cur: psycopg2.extensions.cursor, img_id: (str | int), text_ru: str = '', text_en: str = ''):
+def insert_text(cur: psycopg2.extensions.cursor, img_id: int, text_ru: str = '', text_en: str = ''):
     cur.execute("INSERT INTO texts (img_id, text_ru, text_en) VALUES (%s, %s, %s)",
                 (img_id, text_ru, text_en))
 
@@ -24,7 +23,8 @@ def insert_text(cur: psycopg2.extensions.cursor, img_id: (str | int), text_ru: s
 
 
 
-def search(input_text: str) -> list[str | int] | None:
+
+def search(input_text: str) -> list[int] | None:
     # Удалить знаки препинания
     input_text = input_text.translate(str.maketrans('', '', string.punctuation))
     # Удалить лишние пробелы
@@ -80,7 +80,9 @@ def update_or_add_user(cur: psycopg2.extensions.cursor, user_id: int, lang: str)
 
 
 
-#TODO: убрать все img_id которые не нужны!!
+#TODO: 
+# 1)убрать все img_id которые не нужны!!
+# 2)Разобраться с encoding, чтобы в db загружался нормально русский текст 
 def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id: int = 0, txt_respond: str = ''):
     timestamp = datetime.now()
     user_id = message.from_user.id
@@ -102,4 +104,5 @@ def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id: in
         cur.execute('INSERT INTO actions (time, user_id, action, detail, img_id)' 
             'VALUES (%s, %s, %s, %s::json, %s)', (timestamp, user_id, action, detail, img_id)
         )
-    print(action, user_id, detail)
+    print(action, user_id, detail) #DELETE
+
