@@ -7,16 +7,16 @@
 # 3. with open cursor
 # 4. shutdown.py
 
-
 import sys
 sys.path.append(".")
+import config
 import db.func_db as fdb
+from datetime import datetime
 
 import telebot
 from telebot import types
 import psycopg2
 
-import config 
 
 bot = telebot.TeleBot(config.TG_TOKEN)
 
@@ -24,20 +24,20 @@ bot = telebot.TeleBot(config.TG_TOKEN)
 # PostgreSQL db connection initialization
 try:
     conn = psycopg2.connect(
-        dbname="memehackdb", 
+        dbname="memehackdb",
         user="artyom",
-        host="localhost", 
+        host="localhost",
         port=5432
-        )
+    )
 except psycopg2.Error as error:
     print("I was unable to connect to the database MemeHackDB!\n"
           "Error: {error}")
-    
+
 # conn.rollback() ?????????
 cur = conn.cursor()
 
 
-#Languages and responds
+# Languages and responds
 languages = {
     '🇷🇺 Русский': 'ru',
     '🇬🇧 English': 'en'
@@ -61,19 +61,18 @@ text_responds = {
     }
 }
 
+
 @bot.message_handler(commands=['info'])
 def info(message):
     pass
-    
 
 
-
-#Bot main functions
+# Bot main functions
 
 @bot.message_handler(commands=['start', 'select_language'])
 def start(message):
-    print("Executing start\n") # DELETE
-    
+    print("Executing start\n")  # DELETE
+
     fdb.update_or_add_user(cur, message.from_user.id, 'en')
     fdb.log_action(cur, action='get', message=message)
 
@@ -86,62 +85,61 @@ def start(message):
     bot.send_message(message.from_user.id, respond, reply_markup=markup)
     fdb.log_action(cur, action='pos', message=message, txt_respond=respond)
     bot.register_next_step_handler(message, set_lang)
-    print("Finished start\n") # DELETE
+    print("Finished start\n")  # DELETE
+
 
 def set_lang(message):
-    print("Executing set_lang\n") # DELETE
+    print("Executing set_lang\n")  # DELETE
     if message.text in languages.keys():
         lang = languages[message.text]
         fdb.update_or_add_user(cur, message.from_user.id, lang)
         respond = text_responds['greet'][lang]
         bot.send_message(message.from_user.id, respond)
-        fdb.log_action(cur, action='pos', message=message, txt_respond=respond)   
-        print(f'set lang: {lang}\n') # DELETE
+        fdb.log_action(cur, action='pos', message=message, txt_respond=respond)
+        print(f'set lang: {lang}\n')  # DELETE
         # markup = types.ReplyKeyboardRemove() TODO: doesn't work??????
 
-        
     else:
         respond = "Unknown language! English is set instead.\nEnter your query to find memes:"
         bot.reply_to(message, respond)
         fdb.log_action(cur, action='pos', message=message, txt_respond=respond)
         fdb.update_or_add_user(cur, message.from_user.id, 'en')
     conn.commit()
-    print(f'Finished set_lang\n') # DELETE
-
-
-
+    print(f'Finished set_lang\n')  # DELETE
 
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
 
-
     selected_language = fdb.get_user_lang(cur, user_id=message.from_user.id)
     fdb.update_or_add_user(cur, message.from_user.id, selected_language)
-    print(f'Started get_text_messages, users language: {selected_language}\n') # DELETE
-    if message.text != 'stop': #change to appropriate condition
+    # DELETE
+    print(f'Started get_text_messages, users language: {selected_language}\n')
+    if message.text != 'stop':  # change to appropriate condition
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         # found_memes = fdb.search(message.text)
-        found_memes = [1, 2, 3, 4, 5] #TODO: заглушка, должны быть file_id из предыдущей строки
+        # TODO: заглушка, должны быть file_id из предыдущей строки
+        found_memes = [1, 2, 3, 4, 5]
 
         for meme_id in found_memes:
             reply = 'Pic number {}'.format(meme_id)
-            bot.send_message(message.from_user.id, reply, reply_markup=markup) #временно, пока нет search
+            # временно, пока нет search
+            bot.send_message(message.from_user.id, reply, reply_markup=markup)
             # bot.send_photo(message.from_user.id, meme_id, reply_markup=markup)
             # fdb.log_action(cur, action='pos', message=message, img_id=meme_id)
-        
-
-        
-        
 
         if len(found_memes) != 0:
             meme_result_respond = text_responds['meme_result'][selected_language]
-            bot.send_message(message.from_user.id, meme_result_respond, reply_markup=markup)
-            fdb.log_action(cur, action='pos', message=message, txt_respond=meme_result_respond)
-        else: 
+            bot.send_message(message.from_user.id,
+                             meme_result_respond, reply_markup=markup)
+            fdb.log_action(cur, action='pos', message=message,
+                           txt_respond=meme_result_respond)
+        else:
             no_memes_respond = text_responds['no_memes_found'][selected_language]
-            bot.send_message(message.from_user.id, no_memes_respond, reply_markup=markup)
-            fdb.log_action(cur, action='pos', message=message, txt_respond=no_memes_respond)
+            bot.send_message(message.from_user.id,
+                             no_memes_respond, reply_markup=markup)
+            fdb.log_action(cur, action='pos', message=message,
+                           txt_respond=no_memes_respond)
         conn.commit()
     else:
         pass
@@ -151,6 +149,5 @@ def get_text_messages(message):
 bot.polling(none_stop=True, interval=0)
 
 
-
-#TODO: close all connection(conn, cur), maybe by shutdown.py, or by hand
+# TODO: close all connection(conn, cur), maybe by shutdown.py, or by hand
 conn.close()
