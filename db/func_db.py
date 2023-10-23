@@ -85,7 +85,7 @@ def update_or_add_user(cur: psycopg2.extensions.cursor, user_id: int, lang: str)
 # TODO:
 # 1)убрать все img_id которые не нужны!!
 # 2)Разобраться с encoding, чтобы в db загружался нормально русский текст
-def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id: int = 0, txt_respond: str = ''):
+def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id = None, txt_respond: str = ''):
     timestamp = datetime.now()
     user_id = message.from_user.id
 
