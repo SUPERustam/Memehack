@@ -4,7 +4,7 @@
 import psycopg2
 from datetime import datetime
 import jsonpickle
-
+import string
 
 
 def get_image_by_id(cur: psycopg2.extensions.cursor, id: int):
@@ -23,8 +23,40 @@ def insert_text(cur: psycopg2.extensions.cursor, img_id: int, text_ru: str = '',
 
 
 
+
 def search(input_text: str) -> list[int] | None:
-    pass
+    # Удалить знаки препинания
+    input_text = input_text.translate(str.maketrans('', '', string.punctuation))
+    # Удалить лишние пробелы
+    input_text = ' '.join(input_text.split())
+
+    cur.execute('''
+    SELECT
+    	tg
+    FROM (
+    	SELECT
+     	img_id,
+    	word_similarity(text_ru, %s) + word_similarity(text_en, %s) AS coeff
+    	FROM texts
+    	) l
+    	LEFT JOIN images r
+    	ON l.img_id = r.id
+    WHERE coeff > 0
+    ORDER BY coeff DESC
+    LIMIT 5;
+    ''', (input_text, input_text))
+    all_texts = cur.fetchall()
+    
+    #может попасться элемент NULL, который отображается строкой '_', убираем его
+    for row in all_texts:
+    for value in row:
+        try:
+            number = int(value)
+            number_list.append(number)
+        except ValueError:
+            pass
+
+    return(number_list)
 
 
 
@@ -73,3 +105,4 @@ def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id: in
             'VALUES (%s, %s, %s, %s::json, %s)', (timestamp, user_id, action, detail, img_id)
         )
     print(action, user_id, detail) #DELETE
+
