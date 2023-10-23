@@ -72,4 +72,4 @@ def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id: in
         cur.execute('INSERT INTO actions (time, user_id, action, detail, img_id)' 
             'VALUES (%s, %s, %s, %s::json, %s)', (timestamp, user_id, action, detail, img_id)
         )
-    print(action, user_id, detail)
+    print(action, user_id, detail) #DELETE
