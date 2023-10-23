@@ -40,17 +40,23 @@ def to_vk_link(link: str) -> str:
 @util.timeit
 def pipeline(link: str):
     # connect to db
-    try:
-        conn = psycopg2.connect(
+    conn = psycopg2.connect(
             dbname="memehackdb",
-            user="artyom",
+            user="postgres",
             host="localhost",
             port=5432
         )
-    except psycopg2.Error as error:
-        print("I was unable to connect to the database MemeHackDB!\n"
-              "Error: {error}")
-        sys.exit(1)
+    # try:
+    #     conn = psycopg2.connect(
+    #         dbname="memehackdb",
+    #         user="root",
+    #         host="localhost",
+    #         port=5432
+    #     )
+    # except psycopg2.Error as error:
+    #     print("I was unable to connect to the database MemeHackDB!\n"
+    #           "Error: {error}")
+    #     sys.exit(1)
     
     # initialization
     ocr_cyr, ocr_en = next(ocr.setup_paddleocr())
@@ -62,9 +68,10 @@ def pipeline(link: str):
     with Popen(f"gallery-dl -g {link}".split(), stdout=PIPE, universal_newlines=True) as process:
         stp = 0
         for img in process.stdout:
-            stp += 1
             if stp == 3:
                 break
+            stp += 1
+
             img = img[:-1]  # string end up with '\n'
             
             length_of_links.append(img)
@@ -72,16 +79,16 @@ def pipeline(link: str):
             urllib.request.urlretrieve(img, 'upload_module/pipeline_image.jpg')
 
             text_ru = util.normalization_text(ocr.image2text(
-                ocr_cyr, 'upload_module/pipeline_image.jpg'))
+               ocr_cyr, 'upload_module/pipeline_image.jpg'))
             text_en = util.normalization_text(ocr.image2text(
-                ocr_en, 'upload_module/pipeline_image.jpg'))
+               ocr_en, 'upload_module/pipeline_image.jpg'))
+
 
             fdb.insert_image(cur, vk=img)
-            conn.commit()
-            fdb.insert_text(cur, img_id= ,text_ru, text_en)
-        
-        
-
+            img_id = cur.fetchone()
+            fdb.insert_text(cur, img_id, text_ru, text_en)
+    
+    print(f"{length_of_links=}")    
     conn.commit()
     cur.close()
     conn.close()
@@ -89,14 +96,3 @@ def pipeline(link: str):
 
 if "__main__" == __name__:
     pipeline('https://vk.com/album-206845783_00')
-    print('finish')
-    # 1. max 35.4 mib, Start time: 2023-10-22 23:32:36.399000
-# End time: 2023-10-22 23:33:04.989000
-# Total number of allocations: 343764
-# Total number of frames seen: 519
-    # l = list(parse_vk_album('https://vk.com/album-206845783_00'))
-    # print('finish')
-
-    
-
-    # pipeline('upload_module/file.txt')

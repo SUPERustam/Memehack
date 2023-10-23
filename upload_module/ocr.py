@@ -14,7 +14,7 @@ def image2text(ocr_model: PaddleOCR, img_path: str) -> str:
     result = ocr_model.ocr(img_path, cls=False)
     try:
         a = " ".join((t[1][0] for t in result[0]))
-    except *:
+    except Exception:
         print(a)
     return a
 
