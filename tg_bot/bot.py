@@ -9,16 +9,13 @@
 
 
 import sys
-from datetime import datetime
-
+sys.path.append(".")
+import db.func_db as fdb
 
 import telebot
 from telebot import types
 import psycopg2
-from psycopg2 import sql
 
-sys.path.append(".")
-import db.func_db as fdb
 import config 
 
 bot = telebot.TeleBot(config.TG_TOKEN)
