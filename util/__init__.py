@@ -15,5 +15,5 @@ def timeit(func):
     return timeit_wrapper
 
 
-def normalization_text(text: string) -> string:
+def normalization_text(text: str) -> str:
     return text.translate(str.maketrans('', '', string.punctuation))
