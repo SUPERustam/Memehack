@@ -24,7 +24,7 @@ def insert_text(cur: psycopg2.extensions.cursor, img_id: int, text_ru: str = '',
 
 
 
-def search(input_text: str) -> list[int] | None:
+def search(cur: psycopg2.extensions.cursor, input_text: str) -> list[int]:
     # Удалить знаки препинания
     input_text = input_text.translate(str.maketrans('', '', string.punctuation))
     # Удалить лишние пробелы
@@ -45,18 +45,19 @@ def search(input_text: str) -> list[int] | None:
     ORDER BY coeff DESC
     LIMIT 5;
     ''', (input_text, input_text))
+
     all_texts = cur.fetchall()
-    
+    number_list = []
     #может попасться элемент NULL, который отображается строкой '_', убираем его
     for row in all_texts:
-    for value in row:
-        try:
-            number = int(value)
-            number_list.append(number)
-        except ValueError:
-            pass
+        for value in row:
+            try:
+                number = int(value)
+                number_list.append(number)
+            except ValueError:
+                pass
 
-    return(number_list)
+    return number_list
 
 
 
