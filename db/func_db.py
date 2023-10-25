@@ -31,9 +31,10 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     # Удалить лишние пробелы
     input_text = ' '.join(input_text.split())
 
+    # TODO: return 'tg' not a 'vk'
     cur.execute('''
     SELECT
-    	tg
+    	vk
     FROM (
     	SELECT
      	img_id,
@@ -47,26 +48,12 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     LIMIT 5;
     ''', (input_text, input_text))
 
-    all_texts = cur.fetchall()
-    #[('aaa'), ('bbb')]
-    
+    all_texts = cur.fetchall()    
     number_list = []
 
     for tg_link in all_texts:
         if tg_link[0] != '_':
             number_list.append(tg_link[0])
-        
-
-
-    # может попасться элемент NULL, который отображается строкой '_', убираем его
-    # for row in all_texts:
-    #     for value in row:
-    #         try:
-    #             number = int(value)
-    #             number_list.append(number)
-    #         except ValueError:
-    #             pass
-
     return number_list
 
 

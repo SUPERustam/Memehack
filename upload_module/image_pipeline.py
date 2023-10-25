@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import subprocess
 from subprocess import Popen, PIPE
 import urllib.request
@@ -90,5 +92,12 @@ def close_connections(con: psycopg2.extensions.connection, cur: psycopg2.extensi
 
 if "__main__" == __name__:
     connections = start_connections()
-    print(process_album('https://vk.com/album-206845783_00', connections=connections))
+    # download albums:
+    # print(process_album('https://vk.com/album-206845783_00', connections=connections))
+    
+    # search images
+    # ans = fdb.search(connections[1], input('Search: '))
+    # for i in range(len(ans)):
+    #     print(ans[i])
+    #     urllib.request.urlretrieve(ans[i], f'image{i}.jpg')
     print(close_connections(*connections[:2]))
