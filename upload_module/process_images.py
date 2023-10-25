@@ -10,7 +10,6 @@ from db import func_db as fdb
 import util
 
 
-
 @util.timeit
 def parse_vk_album(link: str, *filename):
     # if filename:
@@ -25,12 +24,6 @@ def parse_vk_album(link: str, *filename):
     #     print(nmap_lines)
     #     return
 
-    with Popen(f"gallery-dl -g {link}".split(), stdout=PIPE, universal_newlines=True) as process:
-        for line in process.stdout:
-            l = line.rstrip()
-
-
-
 
 @util.timeit
 def to_vk_link(link: str) -> str:
@@ -40,24 +33,20 @@ def to_vk_link(link: str) -> str:
 @util.timeit
 def pipeline(link: str):
     # connect to db
-    conn = psycopg2.connect(
+    print('Success')
+    try:
+        conn = psycopg2.connect(
             dbname="memehackdb",
             user="postgres",
-            host="localhost",
-            port=5432
+            host="mdb",
+            port=5432,
+            password=''
         )
-    # try:
-    #     conn = psycopg2.connect(
-    #         dbname="memehackdb",
-    #         user="root",
-    #         host="localhost",
-    #         port=5432
-    #     )
-    # except psycopg2.Error as error:
-    #     print("I was unable to connect to the database MemeHackDB!\n"
-    #           "Error: {error}")
-    #     sys.exit(1)
-    
+    except psycopg2.Error as error:
+        print("I was unable to connect to the database MemeHackDB!\n"
+                "Error: {error}")
+        sys.exit(1)
+
     # initialization
     ocr_cyr, ocr_en = next(ocr.setup_paddleocr())
     cur = conn.cursor()
@@ -73,22 +62,21 @@ def pipeline(link: str):
             stp += 1
 
             img = img[:-1]  # string end up with '\n'
-            
+
             length_of_links.append(img)
 
             urllib.request.urlretrieve(img, 'upload_module/pipeline_image.jpg')
 
             text_ru = util.normalization_text(ocr.image2text(
-               ocr_cyr, 'upload_module/pipeline_image.jpg'))
+                ocr_cyr, 'upload_module/pipeline_image.jpg'))
             text_en = util.normalization_text(ocr.image2text(
-               ocr_en, 'upload_module/pipeline_image.jpg'))
-
+                ocr_en, 'upload_module/pipeline_image.jpg'))
 
             fdb.insert_image(cur, vk=img)
             img_id = cur.fetchone()
             fdb.insert_text(cur, img_id, text_ru, text_en)
-    
-    print(f"{length_of_links=}")    
+
+    print(f"{length_of_links=}")
     conn.commit()
     cur.close()
     conn.close()
