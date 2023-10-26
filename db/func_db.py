@@ -32,7 +32,8 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     input_text = ' '.join(input_text.split())
 
     # TODO: return 'tg' not a 'vk'
-    cur.execute('''
+
+    cur.execute("""
     SELECT
     	vk
     FROM (
@@ -46,7 +47,7 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     WHERE coeff > 0
     ORDER BY coeff DESC
     LIMIT 5;
-    ''', (input_text, input_text))
+    """, (input_text, input_text))
 
     all_texts = cur.fetchall()    
     number_list = []
