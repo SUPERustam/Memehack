@@ -35,7 +35,7 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
 
     cur.execute("""
     SELECT
-    	vk
+    	tg
     FROM (
     	SELECT
      	img_id,
