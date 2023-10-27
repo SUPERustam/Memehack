@@ -4,9 +4,7 @@
 import psycopg2
 from datetime import datetime
 import jsonpickle
-import sys
 
-sys.path.append('.')
 import util
 
 
@@ -30,8 +28,6 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     input_text = util.normalization_text(input_text)
     # Удалить лишние пробелы
     input_text = ' '.join(input_text.split())
-
-    # TODO: return 'tg' not a 'vk'
 
     cur.execute("""
     SELECT

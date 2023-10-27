@@ -9,7 +9,6 @@ import ocr
 import telebot
 import httpx
 
-sys.path.append('.')
 import config
 import util
 from db import func_db as fdb
@@ -27,6 +26,7 @@ def parse_vk_album(link: str, filename):
             i += '3434'
     return
 
+
 def parse_vk_album_another(link: str):
     with Popen(f"gallery-dl -g {link}".split(), stdout=PIPE, universal_newlines=True) as process:
         for i in process.stdout:
@@ -38,6 +38,7 @@ def parse_vk_album_another(link: str):
 
     # nmap_lines = f.stdout.splitlines()
 
+
 def to_vk_album_link(link: str):
     """ Return None when wrong input link"""
     first = link.find('https://vk.com/')
@@ -48,8 +49,9 @@ def to_vk_album_link(link: str):
             'fields': 'id',
             'v': 5.154
         }
-        r = httpx.post('https://api.vk.com/method/groups.getById', data=data)        
+        r = httpx.post('https://api.vk.com/method/groups.getById', data=data)
         return f"https://vk.com/album-{r.json()['response']['groups'][0]['id']}_00"
+
 
 def start_connections():
     # connect to db
@@ -100,6 +102,7 @@ def close_connections(conn: psycopg2.extensions.connection, cur: psycopg2.extens
     conn.close()
     return 'Successful close all db connections'
 
+
 @util.timeit
 def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, bot: telebot.TeleBot):
     chat_item = 0
@@ -111,18 +114,19 @@ def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions
 
     for row in rows:
         try:
-            file_id = bot.send_photo(chat_id=storage_chat_id, photo=row[1]).json['photo'][0]['file_id']
+            file_id = bot.send_photo(
+                chat_id=storage_chat_id, photo=row[1]).json['photo'][0]['file_id']
             print(row[0], file_id)
         except telebot.apihelper.ApiTelegramException as e:
             print('telebot.apihelper.ApiTelegramException', e)
-            print('Telegram error, last writeen object:', file_id, row[0], f'in {chat_item + 1}/{len(config.TG_IMG_STORAGE_ID)} chat')
+            print('Telegram error, last writeen object:', file_id,
+                  row[0], f'in {chat_item + 1}/{len(config.TG_IMG_STORAGE_ID)} chat')
             conn.commit()
             chat_item += 1
             if chat_item == len(config.TG_IMG_STORAGE_ID):
                 chat_item = 0
             storage_chat_id = config.TG_IMG_STORAGE_ID[chat_item]
 
-            
         cur.execute("UPDATE images SET tg=%s WHERE id=%s", (file_id, row[0]))
     else:
         conn.commit()
@@ -142,3 +146,4 @@ if "__main__" == __name__:
     #     print(ans[i])
     #     urllib.request.urlretrieve(ans[i], f'image{i}.jpg')
     # print(close_connections(conn, cur))
+    pass

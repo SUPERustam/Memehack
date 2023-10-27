@@ -7,8 +7,6 @@
 # 3. with open cursor
 # 4. shutdown.py
 
-import sys
-sys.path.append(".")
 import config
 import db.func_db as fdb
 from datetime import datetime
