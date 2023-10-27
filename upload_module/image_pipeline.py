@@ -6,8 +6,11 @@ import urllib.request
 import sys
 import psycopg2
 import ocr
+import telebot
+import httpx
 
 sys.path.append('.')
+import config
 import util
 from db import func_db as fdb
 
@@ -35,10 +38,18 @@ def parse_vk_album_another(link: str):
 
     # nmap_lines = f.stdout.splitlines()
 
-
-def to_vk_link(link: str) -> str:
-    pass
-
+def to_vk_album_link(link: str):
+    """ Return None when wrong input link"""
+    first = link.find('https://vk.com/')
+    if first != -1:
+        data = {
+            'access_token': config.VK_SERVER_ACCESS_KEY,
+            'group_id': link[first+15:link.find('?')],
+            'fields': 'id',
+            'v': 5.154
+        }
+        r = httpx.post('https://api.vk.com/method/groups.getById', data=data)        
+        return f"https://vk.com/album-{r.json()['response']['groups'][0]['id']}_00"
 
 def start_connections():
     # connect to db
@@ -84,20 +95,50 @@ def process_album(link: str, connections: tuple) -> str:
     return f"Done with {count_links} in {link}"
 
 
-def close_connections(con: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor) -> str:
+def close_connections(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor) -> str:
     cur.close()
-    con.close()
+    conn.close()
     return 'Successful close all db connections'
+
+@util.timeit
+def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, bot: telebot.TeleBot):
+    chat_item = 0
+    storage_chat_id = config.TG_IMG_STORAGE_ID[chat_item]
+    bot = telebot.TeleBot(config.TG_TOKEN)
+
+    cur.execute("SELECT id, vk FROM images WHERE tg=''")
+    rows = cur.fetchall()
+
+    for row in rows:
+        try:
+            file_id = bot.send_photo(chat_id=storage_chat_id, photo=row[1]).json['photo'][0]['file_id']
+            print(row[0], file_id)
+        except telebot.apihelper.ApiTelegramException as e:
+            print('telebot.apihelper.ApiTelegramException', e)
+            print('Telegram error, last writeen object:', file_id, row[0], f'in {chat_item + 1}/{len(config.TG_IMG_STORAGE_ID)} chat')
+            conn.commit()
+            chat_item += 1
+            if chat_item == len(config.TG_IMG_STORAGE_ID):
+                chat_item = 0
+            storage_chat_id = config.TG_IMG_STORAGE_ID[chat_item]
+
+            
+        cur.execute("UPDATE images SET tg=%s WHERE id=%s", (file_id, row[0]))
+    else:
+        conn.commit()
+    return "Successful process all vk links into Telegram file id"
 
 
 if "__main__" == __name__:
-    connections = start_connections()
+    # conn, cur, ocr_cyr, ocr_en = start_connections()
+    # img_upload.tg_img_upload(conn, cur, bot)
+
     # download albums:
-    # print(process_album('https://vk.com/album-206845783_00', connections=connections))
-    
+    # print(process_album('https://vk.com/album-206845783_00', connections=(conn, cur, ocr_cyr, ocr_en)))
+
     # search images
-    # ans = fdb.search(connections[1], input('Search: '))
+    # ans = fdb.search(cur, input('Search: '))
     # for i in range(len(ans)):
     #     print(ans[i])
     #     urllib.request.urlretrieve(ans[i], f'image{i}.jpg')
-    print(close_connections(*connections[:2]))
+    # print(close_connections(conn, cur))

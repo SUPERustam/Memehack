@@ -1,0 +1,7 @@
+# paddleocr>=2.0.1
+httpx
+# paddlepaddle
+gallery-dl
+telebot
+psycopg2-binary
+jsonpickle
