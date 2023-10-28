@@ -9,7 +9,7 @@
 
 import config
 import db.func_db as fdb
-from datetime import datetime
+
 
 import telebot
 from telebot import types
@@ -123,7 +123,7 @@ def get_text_messages(message):
             reply = 'Pic number {}'.format(meme_id)
             # временно, пока нет search
             bot.send_message(message.from_user.id, reply, reply_markup=markup)
-            # bot.send_photo(message.from_user.id, meme_id, reply_markup=markup)
+            # bot.send_photo(message.from_user.id, photo=meme_id, reply_markup=markup)
             # fdb.log_action(cur, action='pos', message=message, img_id=meme_id)
 
         if len(found_memes) != 0:
