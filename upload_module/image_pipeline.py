@@ -50,7 +50,8 @@ def to_vk_album_link(link: str):
             'v': 5.154
         }
         r = httpx.post('https://api.vk.com/method/groups.getById', data=data)
-        return f"https://vk.com/album-{r.json()['response']['groups'][0]['id']}_00"
+        group_id = r.json()['response']['groups'][0]['id']
+        return (f"https://vk.com/album-{group_id}_00", int(group_id))
 
 
 def start_connections():
@@ -74,9 +75,7 @@ def start_connections():
     return (conn, cur, ocr_cyr, ocr_en)
 
 
-def process_album(link: str, connections: tuple) -> str:
-    conn, cur, ocr_cyr, ocr_en = connections
-
+def process_album(link: str, source_vk: int, conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, ocr_cyr, ocr_en) -> str:
     count_links = 0
     with Popen(f"gallery-dl -g {link}".split(), stdout=PIPE, universal_newlines=True) as process:
         for img in process.stdout:
@@ -89,7 +88,7 @@ def process_album(link: str, connections: tuple) -> str:
             text_en = util.normalization_text(ocr.image2text(
                 ocr_en, 'upload_module/pipeline_image.jpg'))
 
-            fdb.insert_image(cur, vk=img)
+            fdb.insert_image(cur, vk=img, source_vk=source_vk)
             img_id = cur.fetchone()
             fdb.insert_text(cur, img_id, text_ru, text_en)
 
@@ -138,7 +137,7 @@ if "__main__" == __name__:
     # img_upload.tg_img_upload(conn, cur, bot)
 
     # download albums:
-    # print(process_album('https://vk.com/album-206845783_00', connections=(conn, cur, ocr_cyr, ocr_en)))
+    # print(process_album(*to_vk_album_link('https://vk.com/album-206845783_00'), conn, cur, ocr_cyr, ocr_en))
 
     # search images
     # ans = fdb.search(cur, input('Search: '))

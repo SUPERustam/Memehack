@@ -8,17 +8,17 @@ import jsonpickle
 import util
 
 
-def get_image_by_id(cur: psycopg2.extensions.cursor, id):
+def get_image_by_id(cur: psycopg2.extensions.cursor, id) -> None:
     cur.execute("SELECT * FROM images WHERE id=%s", (id,))
 
 
-def insert_image(cur: psycopg2.extensions.cursor, vk: str, vk_small: str = '', tg: str = '', tg_small: str = '', source_vk: str = ''):
+def insert_image(cur: psycopg2.extensions.cursor, vk: str, tg: str = '', tg_small: str = '', source_vk: int) -> None:
     """ also returning id """
-    cur.execute("INSERT INTO images (vk, vk_small, tg, tg_small, source_vk) VALUES (%s, %s, %s, %s, %s) RETURNING id;",
-                (vk, vk_small, tg, tg_small, source_vk))
+    cur.execute("INSERT INTO images (vk, tg, tg_small, source_vk) VALUES (%s, %s, %s, %s) RETURNING id;",
+                (vk, tg, tg_small, source_vk))
 
 
-def insert_text(cur: psycopg2.extensions.cursor, img_id: int, text_ru: str = '', text_en: str = ''):
+def insert_text(cur: psycopg2.extensions.cursor, img_id: int, text_ru: str = '', text_en: str = '') -> None:
     cur.execute("INSERT INTO texts (img_id, text_ru, text_en) VALUES (%s, %s, %s)",
                 (img_id, text_ru, text_en))
 
