@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 import psycopg2
@@ -55,9 +54,6 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     return number_list
 
 
-# def add_user(cur: psycopg2.extensions.cursor, user_id: int, lang: str):
-#     pass
-
 def get_user_lang(cur: psycopg2.extensions.cursor, user_id: int) -> str:
     cur.execute("SELECT lang FROM users WHERE id = %s", (user_id,))
     lang = cur.fetchone()
@@ -75,15 +71,15 @@ def update_or_add_user(cur: psycopg2.extensions.cursor, user_id: int, lang: str)
                     (user_id, lang))
 
 
-# TODO:
-# 1)убрать все img_id которые не нужны!!
-# 2)Разобраться с encoding, чтобы в db загружался нормально русский текст
 
+
+jsonpickle.set_preferred_backend('json')
+jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
 def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id = None, txt_respond: str = '_'):
     timestamp = datetime.now()
     user_id = message.from_user.id
-
+    
     if action == 'pos':
         if img_id is None:
             detail = jsonpickle.encode({'text': txt_respond})
@@ -96,4 +92,4 @@ def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id = N
     cur.execute('INSERT INTO actions (time, user_id, img_id, action, detail)'
                 'VALUES (%s, %s, %s, %s, %s::json)', (timestamp, user_id, img_id, action, detail)
                 )
-    print(action, user_id, detail)  # DELETE
+    # print(action, user_id, detail)  
