@@ -43,19 +43,19 @@ languages = {
 selected_language = ''
 text_responds = {
     'greet': {
-        'ru': 'Добро пожаловать в бота Memehack.\nВведите свой текстовый запрос:',
+        'ru': 'Добро пожаловать в бота Memehack.\nВведите текстовый запрос:',
         'en': 'Welcome to Memehack bot.\nEnter your text query:',
     },
 
 
     'meme_result': {
-        'ru': 'Это все, что мне удалось найти!',
-        'en': 'That\'s all I could find!'
+        'ru': 'Это все, что мне удалось найти!\nВведите новый запрос:',
+        'en': 'That\'s all I could find!\nEnter your next query:'
     },
 
     'no_memes_found': {
-        'ru': 'Я не нашел подходящих мемов!',
-        'en': 'I didn\'t find any memes for that query!',
+        'ru': 'Я не нашел подходящих мемов!\nВведите новый запрос:',
+        'en': 'I didn\'t find any memes for that query!\nEnter your next query:',
     }
 }
 
@@ -117,13 +117,15 @@ def get_text_messages(message):
 
     if message.text != 'stop':  # change to appropriate condition
         
-        found_memes = fdb.search(message.text)
+        found_memes = fdb.search(cur, message.text)
 
-        for meme_id in found_memes:
+        for meme in found_memes:
             # временно, пока нет search
             # reply = 'Pic number {}'.format(meme_id)
             # bot.send_message(message.from_user.id, reply, reply_markup=markup)
-            bot.send_photo(message.from_user.id, photo=meme_id, reply_markup=markup)
+            meme_id = meme[0]
+            meme_tg_link = meme[1]
+            bot.send_photo(message.from_user.id, photo=meme_tg_link, reply_markup=markup)
             fdb.log_action(cur, action='pos', message=message, img_id=meme_id)
 
         if len(found_memes) != 0:

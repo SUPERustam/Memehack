@@ -12,7 +12,7 @@ def get_image_by_id(cur: psycopg2.extensions.cursor, id) -> None:
     cur.execute("SELECT * FROM images WHERE id=%s", (id,))
 
 
-def insert_image(cur: psycopg2.extensions.cursor, vk: str, tg: str = '', tg_small: str = '', source_vk: int) -> None:
+def insert_image(cur: psycopg2.extensions.cursor, vk: str, source_vk: int, tg: str = '', tg_small: str = '') -> None:
     """ also returning id """
     cur.execute("INSERT INTO images (vk, tg, tg_small, source_vk) VALUES (%s, %s, %s, %s) RETURNING id;",
                 (vk, tg, tg_small, source_vk))
@@ -32,7 +32,7 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
 
     cur.execute("""
     SELECT
-    	tg
+    	id, tg
     FROM (
     	SELECT
      	img_id,
@@ -50,8 +50,8 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     number_list = []
 
     for tg_link in all_texts:
-        if tg_link[0] != '_':
-            number_list.append(tg_link[0])
+        if tg_link[1] != '_':
+            number_list.append(tg_link)
     return number_list
 
 
@@ -85,10 +85,14 @@ def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id = N
     user_id = message.from_user.id
 
     if action == 'pos':
-        detail = jsonpickle.encode({'text': txt_respond} if img_id is None else {'img_id': img_id})
+        if img_id is None:
+            detail = jsonpickle.encode({'text': txt_respond})
+        else:
+            detail = jsonpickle.encode({'img_id': img_id})
+
     else:
         detail = jsonpickle.encode({'text': message.text})
-        
+
     cur.execute('INSERT INTO actions (time, user_id, img_id, action, detail)'
                 'VALUES (%s, %s, %s, %s, %s::json)', (timestamp, user_id, img_id, action, detail)
                 )
