@@ -108,23 +108,23 @@ def set_lang(message):
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-
+    markup = types.ReplyKeyboardRemove() # does it even work??????
     selected_language = fdb.get_user_lang(cur, user_id=message.from_user.id)
     fdb.update_or_add_user(cur, message.from_user.id, selected_language)
     # DELETE
-    print(f'Started get_text_messages, users language: {selected_language}\n')
+    # print(f'Started get_text_messages, users language: {selected_language}\n')
+
+
     if message.text != 'stop':  # change to appropriate condition
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        # found_memes = fdb.search(message.text)
-        # TODO: заглушка, должны быть file_id из предыдущей строки
-        found_memes = [1, 2, 3, 4, 5]
+        
+        found_memes = fdb.search(message.text)
 
         for meme_id in found_memes:
-            reply = 'Pic number {}'.format(meme_id)
             # временно, пока нет search
-            bot.send_message(message.from_user.id, reply, reply_markup=markup)
-            # bot.send_photo(message.from_user.id, photo=meme_id, reply_markup=markup)
-            # fdb.log_action(cur, action='pos', message=message, img_id=meme_id)
+            # reply = 'Pic number {}'.format(meme_id)
+            # bot.send_message(message.from_user.id, reply, reply_markup=markup)
+            bot.send_photo(message.from_user.id, photo=meme_id, reply_markup=markup)
+            fdb.log_action(cur, action='pos', message=message, img_id=meme_id)
 
         if len(found_memes) != 0:
             meme_result_respond = text_responds['meme_result'][selected_language]
