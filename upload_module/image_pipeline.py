@@ -133,16 +133,15 @@ def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions
 
 
 if "__main__" == __name__:
-    # conn, cur, ocr_cyr, ocr_en = start_connections()
+    conn, cur, ocr_cyr, ocr_en = start_connections()
     # img_upload.tg_img_upload(conn, cur, bot)
 
     # download albums:
     # print(process_album(*to_vk_album_link('https://vk.com/album-206845783_00'), conn, cur, ocr_cyr, ocr_en))
 
     # search images
-    # ans = fdb.search(cur, input('Search: '))
-    # for i in range(len(ans)):
-    #     print(ans[i])
-    #     urllib.request.urlretrieve(ans[i], f'image{i}.jpg')
-    # print(close_connections(conn, cur))
-    pass
+    ans = fdb.search(cur, input('Search: '))
+    for i in range(len(ans)):
+        print(ans[i])
+        urllib.request.urlretrieve(ans[i], f'image{i}.jpg')
+    print(close_connections(conn, cur))
