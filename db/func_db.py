@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import psycopg2
-from datetime import datetime
-import jsonpickle
-
 import util
 
 
@@ -71,25 +68,25 @@ def update_or_add_user(cur: psycopg2.extensions.cursor, user_id: int, lang: str)
                     (user_id, lang))
 
 
+#TODO: DELETE IF NOT NEEDED
+#old log_action used with postgres db. 
 
+# jsonpickle.set_preferred_backend('json')
+# jsonpickle.set_encoder_options('json', ensure_ascii=False)
 
-jsonpickle.set_preferred_backend('json')
-jsonpickle.set_encoder_options('json', ensure_ascii=False)
-
-def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id = None, txt_respond: str = '_'):
-    timestamp = datetime.now()
-    user_id = message.from_user.id
-    
-    if action == 'pos':
-        if img_id is None:
-            detail = jsonpickle.encode({'text': txt_respond})
-        else:
-            detail = jsonpickle.encode({'img_id': img_id})
-
-    else:
-        detail = jsonpickle.encode({'text': message.text})
-
-    cur.execute('INSERT INTO actions (time, user_id, img_id, action, detail)'
-                'VALUES (%s, %s, %s, %s, %s::json)', (timestamp, user_id, img_id, action, detail)
-                )
+# def log_action(cur: psycopg2.extensions.cursor, action: str, message, img_id = None, txt_respond: str = '_'):
+#     timestamp = datetime.now()
+#     user_id = message.from_user.id
+    # if action == 'pos':
+    #     if img_id is None:
+    #         detail = json.dumps({'text': txt_respond})
+    #     else:
+    #         detail = json.dumps({'img_id': img_id})
+    # else:
+    #     detail = json.dumps({'text': message.text})
+    # cur.execute('INSERT INTO actions (time, user_id, img_id, action, detail)'
+    #             'VALUES (%s, %s, %s, %s, %s::json)', (timestamp, user_id, img_id, action, detail)
+    #             )
     # print(action, user_id, detail)  
+
+
