@@ -6,29 +6,19 @@
 # 2. Remove markup keyboard
 # 3. with open cursor
 # 4. shutdown.py
-
-
-# 5. Rewrite logging so actions are grouped and hence sent rarely: 
-#    solve the time problem -- learn how to set time for events manually in amplitude, not automatically
-#    when done -- create new db without actions table
-
-
+# 5. Implemet ability to ask for more img for your respond(e.g. "find 5 more pics")
 # 6. Implement good design, bot description and links for reaching out to creators
-# 7. Implemet ability to ask for more img for your respond(e.g. "find 5 more pics")
+
 
 
 
 import config
 import db.func_db as fdb
 
-
 import telebot
 from telebot import types
 import psycopg2
 
-import threading
-import schedule
-import time
 import json
 import requests
 from datetime import datetime
@@ -80,7 +70,27 @@ text_responds = {
 
 #------------- ACTIONS LOGGING -------------
 actions = []
-action_lock = threading.Lock()
+def send_actions_to_amplitude():
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': '*/*'
+    }
+
+    data = {
+        'api_key': config.AMPLITUDE_API_KEY, 
+        'events': actions,
+    }
+
+    response = requests.post("https://api.amplitude.com/2/httpapi", 
+                              headers=headers, data=json.dumps(data)
+                            )
+    
+    if response.status_code != 200:
+        print("Error:", response.text)
+    else:
+        print("batch of actions sent, actions:", actions) #TODO: DELETE
+        actions.clear()
+
 def add_action(action_type: str, action: str, message, img_id = None, txt_respond: str = '_'):
     timestamp = int((datetime.now().timestamp() * 1000))
     user_id = message.from_user.id
@@ -101,31 +111,12 @@ def add_action(action_type: str, action: str, message, img_id = None, txt_respon
             "detail": detail
         }
     }
-    with action_lock:
-        actions.append(amp_event)
-        print(amp_event["time"])
+    actions.append(amp_event)
 
-def send_actions_to_amplitude():
-    headers = {
-        'Content-Type': 'application/json',
-        'Accept': '*/*'
-    }
+    if len(actions) > 100:
+        send_actions_to_amplitude()
 
-    data = {
-        'api_key': config.AMPLITUDE_API_KEY, 
-        'events': actions,
-    }
 
-    response = requests.post("https://api.amplitude.com/2/httpapi", 
-                              headers=headers, data=json.dumps(data)
-                            )
-    
-    if response.status_code != 200:
-        print("Error:", response.text)
-    else:
-        print("batch sent, actions:", actions) #TODO: DELETE
-        with action_lock:
-            actions.clear()
 
 
 
@@ -203,24 +194,6 @@ def get_text_messages(message):
         bot.send_message(message.from_user.id, no_memes_respond, reply_markup=markup)
         add_action(action_type='pos', action="Send text", message=message, txt_respond=no_memes_respond)
     conn.commit()
-    
-
-
-
-
-
-
-
-
-# Scheduling for sending actions to amplitude every N minutes
-schedule.every(1).minutes.do(send_actions_to_amplitude)
-def run_scheduler():
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-scheduler_thread = threading.Thread(target=run_scheduler)
-scheduler_thread.start()
-
 
 bot.polling(none_stop=True, interval=0)
 
