@@ -1,6 +1,6 @@
 # paddleocr>=2.0.1
-httpx
 # paddlepaddle
+httpx
 gallery-dl
 telebot
 psycopg2-binary

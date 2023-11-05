@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import psycopg2
-import util
+try:
+    import psycopg2
+except ImportError:
+    import psycopg2cffi as psycopg2
+import utility
 
 
 def get_image_by_id(cur: psycopg2.extensions.cursor, id) -> None:
@@ -19,10 +22,9 @@ def insert_text(cur: psycopg2.extensions.cursor, img_id: int, text_ru: str = '',
                 (img_id, text_ru, text_en))
 
 
-    
 def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     # Удалить знаки препинания
-    input_text = util.normalization_text(input_text)
+    input_text = utility.normalization_text(input_text)
     # Удалить лишние пробелы
     input_text = ' '.join(input_text.split())
 
@@ -42,7 +44,7 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     LIMIT 5;
     """, (input_text, input_text))
 
-    all_texts = cur.fetchall()    
+    all_texts = cur.fetchall()
     number_list = []
 
     for tg_link in all_texts:
@@ -68,8 +70,8 @@ def update_or_add_user(cur: psycopg2.extensions.cursor, user_id: int, lang: str)
                     (user_id, lang))
 
 
-#TODO: DELETE IF NOT NEEDED
-#old log_action used with postgres db. 
+# TODO: DELETE IF NOT NEEDED
+# old log_action used with postgres db.
 
 # jsonpickle.set_preferred_backend('json')
 # jsonpickle.set_encoder_options('json', ensure_ascii=False)
@@ -87,6 +89,4 @@ def update_or_add_user(cur: psycopg2.extensions.cursor, user_id: int, lang: str)
     # cur.execute('INSERT INTO actions (time, user_id, img_id, action, detail)'
     #             'VALUES (%s, %s, %s, %s, %s::json)', (timestamp, user_id, img_id, action, detail)
     #             )
-    # print(action, user_id, detail)  
-
-
+    # print(action, user_id, detail)

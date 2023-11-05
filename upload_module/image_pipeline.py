@@ -10,7 +10,7 @@ import telebot
 import httpx
 
 import config
-import util
+import utility
 from db import func_db as fdb
 
 
@@ -83,9 +83,9 @@ def process_album(link: str, source_vk: int, conn: psycopg2.extensions.connectio
             img = img[:-1]  # string end up with '\n'
             urllib.request.urlretrieve(img, 'upload_module/pipeline_image.jpg')
 
-            text_ru = util.normalization_text(ocr.image2text(
+            text_ru = utility.normalization_text(ocr.image2text(
                 ocr_cyr, 'upload_module/pipeline_image.jpg'))
-            text_en = util.normalization_text(ocr.image2text(
+            text_en = utility.normalization_text(ocr.image2text(
                 ocr_en, 'upload_module/pipeline_image.jpg'))
 
             fdb.insert_image(cur, vk=img, source_vk=source_vk)
@@ -102,7 +102,7 @@ def close_connections(conn: psycopg2.extensions.connection, cur: psycopg2.extens
     return 'Successful close all db connections'
 
 
-@util.timeit
+@utility.timeit
 def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, bot: telebot.TeleBot):
     chat_item = 0
     storage_chat_id = config.TG_IMG_STORAGE_ID[chat_item]
