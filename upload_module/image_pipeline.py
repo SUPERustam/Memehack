@@ -5,12 +5,13 @@ from subprocess import Popen, PIPE
 import urllib.request
 import sys
 import psycopg2
+from telebot.apihelper import util
 import ocr
 import telebot
 import httpx
 
 import config
-import utility
+import util
 from db import func_db as fdb
 
 
@@ -60,9 +61,9 @@ def start_connections():
         conn = psycopg2.connect(
             dbname="memehackdb",
             user="postgres",
-            host="mdb",
+            host="localhost", # default: mdb
             port=5432,
-            password=''
+            password=config.POSTGRES_SERVER_PASSWORD # default: ''
         )
     except psycopg2.Error as error:
         print("I was unable to connect to the database MemeHackDB!\n"
@@ -83,9 +84,9 @@ def process_album(link: str, source_vk: int, conn: psycopg2.extensions.connectio
             img = img[:-1]  # string end up with '\n'
             urllib.request.urlretrieve(img, 'upload_module/pipeline_image.jpg')
 
-            text_ru = utility.normalization_text(ocr.image2text(
+            text_ru = util.normalization_text(ocr.image2text(
                 ocr_cyr, 'upload_module/pipeline_image.jpg'))
-            text_en = utility.normalization_text(ocr.image2text(
+            text_en = util.normalization_text(ocr.image2text(
                 ocr_en, 'upload_module/pipeline_image.jpg'))
 
             fdb.insert_image(cur, vk=img, source_vk=source_vk)
@@ -102,7 +103,7 @@ def close_connections(conn: psycopg2.extensions.connection, cur: psycopg2.extens
     return 'Successful close all db connections'
 
 
-@utility.timeit
+@util.timeit
 def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, bot: telebot.TeleBot):
     chat_item = 0
     storage_chat_id = config.TG_IMG_STORAGE_ID[chat_item]
@@ -140,8 +141,8 @@ if "__main__" == __name__:
     # print(process_album(*to_vk_album_link('https://vk.com/album-206845783_00'), conn, cur, ocr_cyr, ocr_en))
 
     # search images
-    ans = fdb.search(cur, input('Search: '))
-    for i in range(len(ans)):
-        print(ans[i])
-        urllib.request.urlretrieve(ans[i], f'image{i}.jpg')
-    print(close_connections(conn, cur))
+    # ans = fdb.search(cur, input('Search: '))
+    # for i in range(len(ans)):
+    #     fdb.get_image_by_id(cur, ans[i][0])
+    #     urllib.request.urlretrieve(cur.fetchone()[1], f'image{i}.jpg')
+    # print(close_connections(conn, cur))

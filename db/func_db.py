@@ -2,9 +2,11 @@
 
 try:
     import psycopg2
+    from psycopg2 import sql
 except ImportError:
     import psycopg2cffi as psycopg2
-import utility
+    from psycopg2cffi import sql
+import util
 
 
 def get_image_by_id(cur: psycopg2.extensions.cursor, id) -> None:
@@ -24,7 +26,7 @@ def insert_text(cur: psycopg2.extensions.cursor, img_id: int, text_ru: str = '',
 
 def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     # Удалить знаки препинания
-    input_text = utility.normalization_text(input_text)
+    input_text = util.normalization_text(input_text)
     # Удалить лишние пробелы
     input_text = ' '.join(input_text.split())
 
