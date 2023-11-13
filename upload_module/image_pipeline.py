@@ -5,7 +5,6 @@ from subprocess import Popen, PIPE
 import urllib.request
 import sys
 import psycopg2
-from telebot.apihelper import util
 import ocr
 import telebot
 import httpx
