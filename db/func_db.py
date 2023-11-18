@@ -2,10 +2,8 @@
 
 try:
     import psycopg2
-    from psycopg2 import sql
 except ImportError:
     import psycopg2cffi as psycopg2
-    from psycopg2cffi import sql
 import util
 
 
@@ -32,7 +30,7 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
 
     cur.execute("""
     SELECT
-    	id, tg
+    	id,vk 
     FROM (
     	SELECT
      	img_id,

@@ -12,6 +12,7 @@
 
 import config
 import db.func_db as fdb
+import sys
 
 import telebot
 from telebot import types
@@ -24,7 +25,7 @@ except ImportError:
 import json
 import requests
 from datetime import datetime
-import utility
+import util
 
 
 bot = telebot.TeleBot(config.TG_TOKEN)
@@ -34,13 +35,14 @@ try:
     conn = psycopg2.connect(
         dbname="memehackdb",
         user="postgres",
-        host="localhost",
+        host="mdb",
         port=5432,
         client_encoding="UTF8"
     )
 except psycopg2.Error as error:
     print("I was unable to connect to the database MemeHackDB!\n"
           "Error: {error}")
+    sys.exit(1)
 cur = conn.cursor()
 
 

@@ -60,9 +60,10 @@ def start_connections():
         conn = psycopg2.connect(
             dbname="memehackdb",
             user="postgres",
-            host="localhost", # default: mdb
+            # host="localhost", # default: mdb
+            host='mdb',
             port=5432,
-            password=config.POSTGRES_SERVER_PASSWORD # default: ''
+            # password=config.POSTGRES_SERVER_PASSWORD # default: ''
         )
     except psycopg2.Error as error:
         print("I was unable to connect to the database MemeHackDB!\n"
@@ -140,8 +141,8 @@ if "__main__" == __name__:
     # print(process_album(*to_vk_album_link('https://vk.com/album-206845783_00'), conn, cur, ocr_cyr, ocr_en))
 
     # search images
-    # ans = fdb.search(cur, input('Search: '))
-    # for i in range(len(ans)):
-    #     fdb.get_image_by_id(cur, ans[i][0])
-    #     urllib.request.urlretrieve(cur.fetchone()[1], f'image{i}.jpg')
-    # print(close_connections(conn, cur))
+    ans = fdb.search(cur, input('Search: '))
+    for i in range(len(ans)):
+        fdb.get_image_by_id(cur, ans[i][0])
+        urllib.request.urlretrieve(cur.fetchone()[1], f'image{i}.jpg')
+    print(close_connections(conn, cur))
