@@ -34,7 +34,7 @@ bot = telebot.TeleBot(config.TG_TOKEN)
 try:
     conn = psycopg2.connect(
         dbname="memehackdb",
-        user="postgres",
+        ser="postgres",
         host="mdb",
         port=5432,
         client_encoding="UTF8"

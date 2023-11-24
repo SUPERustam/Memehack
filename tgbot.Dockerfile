@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:experimental
 FROM pypy:latest
 
 WORKDIR app/
