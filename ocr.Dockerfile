@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     git \
     software-properties-common \
+    libgl1-mesa-glx \ 
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/* /tmp/apt-packages
 
 RUN add-apt-repository ppa:deadsnakes/ppa \
@@ -16,7 +18,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa \
     && rm -rf /var/lib/apt/lists/* /tmp/apt-packages
   # python3.9-distutils \
 
-RUN apt-get update && eapt-get install -y \
+RUN apt-get update && apt-get install -y \
     python3.8 \
     python3-pip \
     && rm -rf /var/lib/apt/lists/* /tmp/apt-packages
@@ -25,17 +27,14 @@ RUN apt-get update && eapt-get install -y \
 
 WORKDIR /app
 
-# RUN pip install -r requirements.txt
-RUN /bin/bash -c ". ./.env/bin/activate" \ 
-    && python3 -m pip install -U https://paddle-qa.bj.bcebos.com/CompileService/train/aarch64/paddlepaddle-2.3.2-cp38-cp38-linux_aarch64.whl \
-    "paddleocr>=2.0.1" \
-    "PyMuPDF==1.21.1" \
-    && rm -rf /root/.cache /tmp/pip-* /tmp/pip3-packages
+# RUN /bin/bash -c ". ./.env/bin/activate" && \ 
+RUN python3.8 -m pip install --no-cache-dir -U https://paddle-qa.bj.bcebos.com/CompileService/train/aarch64/paddlepaddle-2.3.2-cp38-cp38-linux_aarch64.whl
 
-RUN git clone --quiet https://github.com/win0err/aphrodite-terminal-theme ~/.bash/themes/aphrodite \
-    && echo 'source ~/.bash/themes/aphrodite/aphrodite.theme.sh\n shopt -s autocd > /dev/null\n alias python=python3.9\n alias pip=pip3' >> ~/.bashrc
+RUN python3.8 -m pip install --no-cache-dir "paddleocr>=2.0.1" \
+    -U "PyMuPDF==1.21.1" 
 
+COPY upload_module/requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+ENV PYTHONPATH=/app
 ENTRYPOINT ["/bin/bash"]
-
-# EXPOSE 8000
-# CMD [ "python3", "flask_app.py" ]
