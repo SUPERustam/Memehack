@@ -133,7 +133,7 @@ def add_action(action_type: str, action: str, message, img_id=None, txt_respond:
     }
     actions.append(amp_event)
 
-    if len(actions) > 100:
+    if len(actions) > 10:
         send_actions_to_amplitude()
 
 
