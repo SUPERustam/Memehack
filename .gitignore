@@ -169,6 +169,7 @@ env.list
 # big files
 gallery-dl/*
 image*
+upload_module/data/*
 
 # Cache files
 *cache_image*

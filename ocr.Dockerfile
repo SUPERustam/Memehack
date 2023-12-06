@@ -4,7 +4,6 @@ FROM ubuntu:20.04
 LABEL maintainer=498rustam@gmail.com
 ENV TZ=Europe/Moscow \
     DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -29,12 +28,14 @@ WORKDIR /app
 
 # RUN /bin/bash -c ". ./.env/bin/activate" && \ 
 RUN python3.8 -m pip install --no-cache-dir -U https://paddle-qa.bj.bcebos.com/CompileService/train/aarch64/paddlepaddle-2.3.2-cp38-cp38-linux_aarch64.whl
-
 RUN python3.8 -m pip install --no-cache-dir "paddleocr>=2.0.1" \
     -U "PyMuPDF==1.21.1" 
 
-COPY upload_module/requirements.txt requirements.txt
+COPY --link upload_module/ upload_module/ 
 RUN pip install --no-cache-dir -r requirements.txt
+COPY --link util.py util.py
+COPY --link config.py config.py
+COPY --link db/ db/
 
 ENV PYTHONPATH=/app
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["python3", "-O", "upload_module/pipeline.py", ""]
