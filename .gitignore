@@ -169,3 +169,6 @@ env.list
 # big files
 gallery-dl/*
 image*
+
+# Cache files
+*cache_image*

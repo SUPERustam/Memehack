@@ -2,8 +2,7 @@ import sys
 
 from paddleocr import PaddleOCR
 
-sys.path.append('.')
-import utility
+import util
 
 def setup_paddleocr():
     ocr_cyr = PaddleOCR(use_angle_cls=True, lang='cyrillic')
