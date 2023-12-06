@@ -31,11 +31,5 @@ RUN python3.8 -m pip install --no-cache-dir -U https://paddle-qa.bj.bcebos.com/C
 RUN python3.8 -m pip install --no-cache-dir "paddleocr>=2.0.1" \
     -U "PyMuPDF==1.21.1" 
 
-COPY --link upload_module/ upload_module/ 
-RUN pip install --no-cache-dir -r requirements.txt
-COPY --link util.py util.py
-COPY --link config.py config.py
-COPY --link db/ db/
-
 ENV PYTHONPATH=/app
-ENTRYPOINT ["python3", "-O", "upload_module/pipeline.py", ""]
+ENTRYPOINT ["/bin/bash"]

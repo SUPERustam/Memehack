@@ -45,27 +45,27 @@ def to_vk_album_link(link: str) -> str:  # TODO: fix problem
 def start_connections():
     # connect to db
     try:
-        # result = urlparse(config.DATABASE_URL)
-        # username = result.username
-        # password = result.password
-        # database = result.path[1:]
-        # hostname = result.hostname
-        # port = result.port
-        # conn = psycopg2.connect(
-        #     database=database,
-        #     user=username,
-        #     password=password,
-        #     host=hostname,
-        #     port=port
-        # )
+        result = urlparse(config.DATABASE_URL)
+        username = result.username
+        password = result.password
+        database = result.path[1:]
+        hostname = result.hostname
+        port = result.port
         conn = psycopg2.connect(
-            dbname="memehackdb",
-            user="postgres",
-            # host="localhost", # default: mdb
-            host='mdb',
-            port=5432,
-            # password=config.POSTGRES_SERVER_PASSWORD # default: ''
+            database=database,
+            user=username,
+            password=password,
+            host=hostname,
+            port=port
         )
+        # conn = psycopg2.connect(
+        #     dbname="memehackdb",
+        #     user="postgres",
+        #     # host="localhost", # default: mdb
+        #     host='mdb',
+        #     port=5432,
+        #     # password=config.POSTGRES_SERVER_PASSWORD # default: ''
+        # )
     except psycopg2.Error as error:
         print("I was unable to connect to the database MemeHackDB!\n"
               f"Error: {error}")
@@ -101,7 +101,7 @@ def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions
         except telebot.apihelper.ApiTelegramException as e:
             print('telebot.apihelper.ApiTelegramException', e)
             print('Telegram error, last writeen object:', file_id,
-                  row[0], f'in {chat_item + 1}/{len(config.TG_IMG_STORAGE_ID)} chat')
+                  row[0], f'in {chat_item}/{len(config.TG_IMG_STORAGE_ID)} chat')
             conn.commit()
             chat_item += 1
             if chat_item == len(config.TG_IMG_STORAGE_ID):
