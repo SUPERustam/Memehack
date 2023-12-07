@@ -1,19 +1,13 @@
-# fly.toml app configuration file generated for upload-module on 2023-12-07T11:24:10+03:00
+# fly.toml app configuration file generated for m-tgbot on 2023-11-28T09:49:52+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "upload-module"
+app = "m-tgbot"
 primary_region = "waw"
 
 [build]
-  image = "superustam/memehack_ocr:latest"
-
-[[mounts]]
-  source = "uploadvolume"
-  destination = "/app/upload_module/"
-  initial_size = "1gb"
-  auto_extend_size_threshold = 0
+  image = "superustam/memehack_tgbot:latest"
 
 [http_service]
   internal_port = 8080

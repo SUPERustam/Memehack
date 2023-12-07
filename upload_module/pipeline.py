@@ -162,16 +162,16 @@ if "__main__" == __name__:
     conn, cur, ocr_cyr, ocr_en = start_connections()
 
     # search images
-    # ans = fdb.search(cur, input('Search: '))
-    # for i in range(len(ans)):
-    #     fdb.get_image_by_id(cur, ans[i][0])
-    #     urllib.request.urlretrieve(cur.fetchone()[1], f'image{i}.jpg')
+    ans = fdb.search(cur, input('Search: '))
+    for i in range(len(ans)):
+        fdb.get_image_by_id(cur, ans[i][0])
+        urllib.request.urlretrieve(cur.fetchone()[1], f'image{i}.jpg')
 
-    for command in sys.argv[1:]:
-        if command == 'tg_img_upload':
-            bot = telebot.TeleBot(config.TG_TOKEN)
-            tg_img_upload(conn, cur, bot)
-        else:  # from list of links, process images into db
-            print(process_album(conn, cur, ocr_cyr, ocr_en, command))
-        # TODO: add option to make list of links from vk album id (using parse_vk_album function)
+    # for command in sys.argv[1:]:
+    #     if command == 'tg_img_upload':
+    #         bot = telebot.TeleBot(config.TG_TOKEN)
+    #         tg_img_upload(conn, cur, bot)
+    #     else:  # from list of links, process images into db
+    #         print(process_album(conn, cur, ocr_cyr, ocr_en, command))
+    #     # TODO: add option to make list of links from vk album id (using parse_vk_album function)
     print(close_connections(conn, cur))
