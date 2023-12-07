@@ -34,7 +34,7 @@ def search(cur: psycopg2.extensions.cursor, input_text: str) -> list:
     FROM (
     	SELECT
      	img_id,
-    	word_similarity(text_ru, %s) + word_similarity(text_en, %s) AS coeff
+    	word_similarity(%s, text_ru) + word_similarity(%s, text_en) AS coeff
     	FROM texts
     	) l
     	LEFT JOIN images r
