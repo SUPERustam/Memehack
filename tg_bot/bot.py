@@ -196,7 +196,7 @@ def get_text_messages(message):
         meme_id = meme[0]
         meme_tg_link = meme[1]
         bot.send_photo(message.from_user.id,
-                       photo=meme_tg_link, reply_markup=markup)
+                       photo=meme_tg_link, caption="@memehackbot", reply_markup=markup)
         add_action(action_type='pos', action="Send img",
                    message=message, img_id=meme_id)
 
