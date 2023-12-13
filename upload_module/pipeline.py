@@ -45,27 +45,27 @@ def to_vk_album_link(link: str) -> str:  # TODO: fix problem
 def start_connections():
     # connect to db
     try:
-        result = urlparse(config.DATABASE_URL)
-        username = result.username
-        password = result.password
-        database = result.path[1:]
-        hostname = result.hostname
-        port = result.port
-        conn = psycopg2.connect(
-            database=database,
-            user=username,
-            password=password,
-            host=hostname,
-            port=port
-        )
+        # result = urlparse(config.DATABASE_URL)
+        # username = result.username
+        # password = result.password
+        # database = result.path[1:]
+        # hostname = result.hostname
+        # port = result.port
         # conn = psycopg2.connect(
-        #     dbname="memehackdb",
-        #     user="postgres",
-        #     # host="localhost", # default: mdb
-        #     host='mdb',
-        #     port=5432,
-        #     # password=config.POSTGRES_SERVER_PASSWORD # default: ''
+        #     database=database,
+        #     user=username,
+        #     password=password,
+        #     host=hostname,
+        #     port=port
         # )
+        conn = psycopg2.connect(
+            dbname="memehackdb",
+            user="postgres",
+            # host="localhost", # default: mdb
+            host='mdb',
+            port=5432,
+            # password=config.POSTGRES_SERVER_PASSWORD # default: ''
+        )
     except psycopg2.Error as error:
         print("I was unable to connect to the database MemeHackDB!\n"
               f"Error: {error}")
@@ -84,7 +84,7 @@ def close_connections(conn: psycopg2.extensions.connection, cur: psycopg2.extens
 
 
 @util.timeit
-def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, bot: telebot.TeleBot):
+def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, bot: telebot.TeleBot, start_image: int = 0):
     chat_item = 0
     storage_chat_id = config.TG_IMG_STORAGE_ID[chat_item]
     bot = telebot.TeleBot(config.TG_TOKEN)
@@ -93,7 +93,9 @@ def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions
     rows = cur.fetchall()
     file_id = None
 
-    for row in rows:
+    for i, row in enumerate(rows):
+        if i < start_image:
+            continue
         try:
             file_id = bot.send_photo(
                 chat_id=storage_chat_id, photo=row[1]).json['photo'][0]['file_id']
@@ -114,8 +116,40 @@ def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions
     return "Successful process all vk links into Telegram file id"
 
 
+def process_photo(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, ocr_cyr, ocr_en, source_vk: str, image_link: str) -> str:
+    sleep_time = 10
+    while True:
+        try:
+            urllib.request.urlretrieve(
+                image_link, 'upload_module/cache_image.jpg')
+        except urllib.error.URLError as URLError:
+            print(
+                f"URLError {source_vk=} {image_link=}, sleep({sleep_time})")
+            time.sleep(sleep_time)
+            sleep_time += 10
+            if sleep_time > 50:
+                print(
+                    'Long wait: more then 50 seconds, added to upload_module/failed_download.txt')
+                with open('upload_module/failed_download.txt', 'a') as fail_file:
+                    fail_file.write(f"{source_vk} {image_link}\n")
+                break
+        except Exception as e:
+            print(f"{source_vk=} {image_link=}")
+            raise e
+        else:
+            text_ru = util.normalization_text(ocr.image2text(
+                ocr_cyr, 'upload_module/cache_image.jpg'))
+            text_en = util.normalization_text(ocr.image2text(
+                ocr_en, 'upload_module/cache_image.jpg'))
+            fdb.insert_image(cur, vk=image_link, source_vk=source_vk)
+            img_id = cur.fetchone()
+            fdb.insert_text(cur, img_id, text_ru, text_en)
+            return f"Successful process {image_link} from {source_vk=}"
+    return f"Can't process {image_link} from {source_vk=}"
+
+
 @util.timeit
-def process_album(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, ocr_cyr, ocr_en, source_vk: str, start_image: int = 0) -> str:
+def process_album_file(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, ocr_cyr, ocr_en, source_vk: str, start_image: int = 0) -> str:
     with open(f'upload_module/data/{source_vk}.txt') as image_list:
         for i, link in enumerate(image_list):
             if i < start_image:
@@ -130,19 +164,18 @@ def process_album(conn: psycopg2.extensions.connection, cur: psycopg2.extensions
                 except urllib.error.URLError as URLError:
                     conn.commit()
                     print(
-                        f"URLError {source_vk=} {i=}(+1) {link=} conn.commit() done, sleep({sleep_time})")
+                        f"URLError {source_vk=} {i=} {link=} conn.commit() done, sleep({sleep_time})")
                     time.sleep(sleep_time)
                     sleep_time += 10
                     if sleep_time > 50:
                         print(
                             'Long wait: more then 50 seconds, added to upload_module/failed_download.txt')
                         with open('upload_module/failed_download.txt', 'a') as fail_file:
-                            fail_file.write(source_vk)
-                            fail_file.write(link)
+                            fail_file.write(f"{source_vk} {link}\n")
                         break
                 except Exception as e:
                     conn.commit()
-                    print(f"{source_vk=} {i=}(+1) {link=} conn.commit() done")
+                    print(f"{source_vk=} {i=} {link=} conn.commit() done")
                     raise e
                 else:
                     text_ru = util.normalization_text(ocr.image2text(
@@ -162,16 +195,31 @@ if "__main__" == __name__:
     conn, cur, ocr_cyr, ocr_en = start_connections()
 
     # search images
-    ans = fdb.search(cur, input('Search: '))
-    for i in range(len(ans)):
-        fdb.get_image_by_id(cur, ans[i][0])
-        urllib.request.urlretrieve(cur.fetchone()[1], f'image{i}.jpg')
+    # ans = fdb.search(cur, input('Search: '))
+    # for i in range(len(ans)):
+    #     fdb.get_image_by_id(cur, ans[i][0])
+    #     urllib.request.urlretrieve(cur.fetchone()[1], f'image{i}.jpg')
 
-    # for command in sys.argv[1:]:
-    #     if command == 'tg_img_upload':
-    #         bot = telebot.TeleBot(config.TG_TOKEN)
-    #         tg_img_upload(conn, cur, bot)
-    #     else:  # from list of links, process images into db
-    #         print(process_album(conn, cur, ocr_cyr, ocr_en, command))
-    #     # TODO: add option to make list of links from vk album id (using parse_vk_album function)
-    print(close_connections(conn, cur))
+    for command in sys.argv[1:]:
+        try:
+            ind = command.find(':')
+            if 'tg_img_upload' in command:
+                bot = telebot.TeleBot(config.TG_TOKEN)
+                if ind == -1:
+                    tg_img_upload(conn, cur, bot)
+                else:
+                    tg_img_upload(conn, cur, bot, int(command[ind + 1:]))
+            else:  # from list of links, process images into db
+                if ind == -1:
+                    print(process_album_file(conn, cur, ocr_cyr, ocr_en, command))
+                else:
+                    print(process_album_file(conn, cur, ocr_cyr, ocr_en, command, int(command[ind + 1:])))
+
+
+            # TODO: add option to make list of links from vk album id (using parse_vk_album function, step 1 in plan)
+
+        except KeyboardInterrupt as e:
+            print(f'Done {conn.commit()=}')
+            sys.exit(1)
+        finally:
+            print(close_connections(conn, cur))
