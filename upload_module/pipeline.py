@@ -98,22 +98,20 @@ def tg_img_upload(conn: psycopg2.extensions.connection, cur: psycopg2.extensions
             continue
         try:
             file_id = bot.send_photo(
-                chat_id=storage_chat_id, photo=row[1]).json['photo'][0]['file_id']
+                chat_id=config.TG_IMG_STORAGE_ID[i % 4], photo=row[1]).json['photo'][0]['file_id']
             print(row[0], file_id)
         except telebot.apihelper.ApiTelegramException as e:
             print('telebot.apihelper.ApiTelegramException', e)
             print('Telegram error, last writeen object:', file_id,
                   row[0], f'in {chat_item}/{len(config.TG_IMG_STORAGE_ID)} chat')
             conn.commit()
-            chat_item += 1
-            if chat_item == len(config.TG_IMG_STORAGE_ID):
-                chat_item = 0
-            storage_chat_id = config.TG_IMG_STORAGE_ID[chat_item]
+            time.sleep(5)
+        else:
+            cur.execute("UPDATE images SET tg=%s WHERE id=%s",
+                        (file_id, row[0]))
 
-        cur.execute("UPDATE images SET tg=%s WHERE id=%s", (file_id, row[0]))
-    else:
-        conn.commit()
-    return "Successful process all vk links into Telegram file id"
+    conn.commit()
+    return "Successful process all vk links into Telegram file id. Added {len(row)}"
 
 
 def process_photo(conn: psycopg2.extensions.connection, cur: psycopg2.extensions.cursor, ocr_cyr, ocr_en, source_vk: str, image_link: str) -> str:
@@ -213,8 +211,8 @@ if "__main__" == __name__:
                 if ind == -1:
                     print(process_album_file(conn, cur, ocr_cyr, ocr_en, command))
                 else:
-                    print(process_album_file(conn, cur, ocr_cyr, ocr_en, command, int(command[ind + 1:])))
-
+                    print(process_album_file(conn, cur, ocr_cyr,
+                          ocr_en, command, int(command[ind + 1:])))
 
             # TODO: add option to make list of links from vk album id (using parse_vk_album function, step 1 in plan)
 
